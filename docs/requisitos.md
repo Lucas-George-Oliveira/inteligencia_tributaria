@@ -20,3 +20,14 @@
 | **RF10** | Integração com Geoportal / GIS | O sistema deve integrar com o serviço de cadastro imobiliário para obter a malha urbana espacializada de Palmas. | 1. Buscar coordenadas e limites de bairros/quadras via serviço GIS.<br>2. Renderizar polígonos e marcadores no componente de mapa interativo. | **4** |
 
 ---
+## 1.2. Requisitos Não Funcionais (RNF)
+
+| ID | Categoria | Descrição da Restrição (com número e condição) | Métrica / Forma de Teste |
+| :--- | :--- | :--- | :--- |
+| *RNF01* | Proteção de Grupos Vulneráveis | O sistema deve aplicar um filtro automático que garanta 100% de exclusão dos beneficiários do IPTU Social das listas de cobrança preditiva. | Teste unitário de filtro na base de dados garantindo 0 registros do IPTU Social na saída do modelo. |
+| *RNF02* | Desempenho / Usabilidade | A consulta de débitos realizada pelo cidadão deve exibir o resultado na tela em no máximo 2 segundos após informar o CPF ou a Inscrição do Imóvel. | Medição do tempo de resposta HTTP/renderização em testes automatizados (tempo < 2.0s). |
+| *RNF03* | Explicabilidade / LGPD | O sistema deve gerar a resposta com a explicação da nota de risco do cidadão (Art. 20 da LGPD) em linguagem simples e em no máximo 2 segundos. | Verificação do tempo de geração do trecho explicativo (SHAP/LIME) no limite estipulado. |
+| *RNF04* | Privacidade e Segurança | Dados pessoais do cidadão (como CPF e nome) devem ser armazenados com criptografia ou com os números parcialmente ocultos no banco de dados. | Inspeção visual no banco de dados e na interface para validar o mascaramento de CPF (***.123.456-**). |
+| *RNF05* | Tecnologia e Reprodutibilidade | O projeto deve ser desenvolvido em Python 3.10+ com dependências isoladas em requirements.txt. | Instalação limpa do ambiente executando o comando pip install -r requirements.txt. |
+
+---
