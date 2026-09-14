@@ -31,3 +31,22 @@
 | *RNF05* | Tecnologia e Reprodutibilidade | O projeto deve ser desenvolvido em Python 3.10+ com dependências isoladas em requirements.txt. | Instalação limpa do ambiente executando o comando pip install -r requirements.txt. |
 
 ---
+## 1.3. Matriz de Priorização MoSCOW
+
+* **Must Have (no máximo 2):**
+  * **RF01** — Visualização no Mapa e Lista Priorizada de Devedores (A entrega central do projeto de inteligência fiscal).
+  * **RF02** — Relatórios Explicativos da Indicação da Cobrança (Essencial para a legalidade e transparência das ações da Procuradoria).
+
+* **Should Have (Alta prioridade):**
+  * **RF03** — Filtragem por Imposto (IPTU/ISS), Valor e Região (Otimiza o trabalho do analista).
+  * **RF06** — Exportação de dados em CSV e PDF.
+  * **RF07** — Registro Automático de Logs de Auditoria (LGPD).
+  * **RF08** — Coleta de dados via API REST da Prefeitura.
+  * **RF09** — Autenticação e Controle de Acesso.
+  * **RF10** — Integração com serviço GIS/Geoportal.
+
+* **Could Have (Desejável):**
+  * **RF04** — Consulta e solicitação de explicação do risco pelo cidadão no portal (Será liberado após a validação do uso interno pela Sefin).
+
+* **Won't Have (Fora do escopo do MVP por enquanto):**
+  * **RF05** — Simulação de parcelamento e renegociação direta de dívidas pelo cidadão (Exige integração complexa com sistemas bancários/arrecadação).
