@@ -6,10 +6,10 @@ Projeto Integrador: Inteligência Tributaria: Predição de Inadimplência e Pri
 | Nome do Integrante | Matrícula | Usuário GitHub (@) | Papel Principal no Time |
 | :--- | :--- | :--- | :--- |
 | Lucas George Oliveira Nascimento | 2026111523 | `@Lucas-George-Oliveira` | Product Owner (PO) / Repo Owner |
-| Jacinto Pereira Brito | [Matrícula 2] | `@Jacintopereirabrito-Design` | Scrum Master (SM) |
+| Jacinto Pereira Brito | 2026111953 | `@Jacintopereirabrito-Design` | Scrum Master (SM) |
 | Pedro Santos Magalhães Neto | 2026111909 | `@pedroneto-git` | Developer Backend |
 | Rafael Vieira Lima | [Matrícula 4] | `@rafaelvlima18` | Developer ML (AI) |
-| Geovana Souza Mendonça | [Matrícula 5] | `@geomendonca` | Developer Frontend |
+| Geovana Souza Mendonça | 2026112336 | `@geomendonca` | Developer Frontend |
 
 * **Repositório do Projeto:** `https://github.com/Lucas-George-Oliveira/inteligencia-tributaria`
 * **Painel de Gestão Ágil (Kanban):** `https://github.com/users/Lucas-George-Oliveira/projects/1`
