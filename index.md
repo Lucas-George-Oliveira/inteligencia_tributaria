@@ -14,8 +14,11 @@ Apoio à documentação técnica do projeto.
 Facilitação da manutenção e evolução do sistema, permitindo visualizar impactos de alterações.
 
 ## CÓDIGO DO DIAGRAMA ENGENHARIA DE RELACIONAMENTO:
-<img width="4032" height="1598" alt="image" src="https://github.com/user-attachments/assets/9826290a-e10e-4d0c-a185-a10817d4b3e1" />
-
+    CONTRIBUINTE {
+            string cnpj_cpf PK
+            string nome 
+            boolean_is_iptu_social 
+            string contato
     }
 
     IMOVEL {
