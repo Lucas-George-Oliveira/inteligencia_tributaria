@@ -76,5 +76,7 @@ Facilitação da manutenção e evolução do sistema, permitindo visualizar imp
     DEBITO_TRIBUTARIO ||--|| SCORE_RECUPERABILIDADE : "possui_score"
     MODELO_PREDICAO ||--o{ SCORE_RECUPERABILIDADE : "gera"
     ANALISTA_FISCAL ||--o{ LOG_AUDITORIA : "registra_acesso"
+
+
 ## DIAGRAMA DE RELACIONAMENTO
 <img width="793" height="767" alt="Captura de tela 2026-09-23 183352" src="https://github.com/user-attachments/assets/f9533e66-296f-4e61-965b-896db183b9a3" />
