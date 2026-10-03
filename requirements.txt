@@ -1,0 +1,19 @@
+# === Interface e Dashboard ===
+streamlit           # Criação do painel interativo (MVP)
+
+# === Manipulação de Dados e ETL ===
+pandas              # Tratamento dos dados processados e brutos
+requests            # Para a coleta de dados via API REST da Prefeitura e IBGE
+
+# === Banco de Dados ===
+sqlalchemy          # Para conexão com o banco via Python
+psycopg2-binary
+
+# === Machine Learning e IA ===
+scikit-learn        # Modelos clássicos (ex: Random Forest) e métricas
+xgboost             # Algoritmo de predição de inadimplência exigido
+joblib              # Para salvar/carregar o model_inadimplencia.joblib e scaler.joblib
+
+# === Governança Algorítmica (Fairness) ===
+shap                # Explicabilidade algorítmica exigida pela LGPD
+lime                # Explicabilidade algorítmica exigida pela LGPD
