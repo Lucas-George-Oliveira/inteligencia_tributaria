@@ -79,3 +79,4 @@ Facilitação da manutenção e evolução do sistema, permitindo visualizar imp
 
 
 ## DIAGRAMA DE RELACIONAMENTO
+<img width="793" height="767" alt="image" src="https://github.com/user-attachments/assets/9bdc5fcb-2ae5-489d-acaf-8a282a617005" />
