@@ -7,12 +7,21 @@ requests            # Para a coleta de dados via API REST da Prefeitura e IBGE
 
 # === Banco de Dados ===
 sqlalchemy          # Para conexão com o banco via Python
-psycopg2-binary
+psycopg2-binary     # Driver para conexão com PostgreSQL
+
+# === Estruturas de Dados e Grafos (Sprint 2) ===
+networkx            # Construção e análise do grafo de múltiplos vínculos
+
+# === Análise Exploratória e Visualização (Sprint 3) ===
+matplotlib          # Geração de gráficos base e renderização da rede do NetworkX
+seaborn             # Visualizações estatísticas avançadas para o Relatório de EDA
+geopandas           # Manipulação das malhas urbanas e arquivos GeoJSON de Palmas
+folium              # Renderização do mapa geoespacial interativo de inadimplência
 
 # === Machine Learning e IA ===
 scikit-learn        # Modelos clássicos (ex: Random Forest) e métricas
 xgboost             # Algoritmo de predição de inadimplência exigido
-joblib              # Para salvar/carregar o model_inadimplencia.joblib e scaler.joblib
+joblib              # Para salvar/carregar os modelos e normalizadores treinados
 
 # === Governança Algorítmica (Fairness) ===
 shap                # Explicabilidade algorítmica exigida pela LGPD
