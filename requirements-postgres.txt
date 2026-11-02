@@ -1,0 +1,3 @@
+-r requirements-etl.txt
+# Driver PostgreSQL já usado pelo requirements.txt do repositório
+psycopg2-binary>=2.9,<3
