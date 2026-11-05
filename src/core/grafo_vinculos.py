@@ -1,84 +1,54 @@
-class GrafoSefin:
-    def __init__(self):
-        # O grafo será um dicionário de dicionários para guardar a Lista de Adjacência.
-        # Ex: { 'CPF_123': ['Imovel_A', 'Imovel_B'] }
-        self.grafo = {}
-        # Dicionário auxiliar para guardar o TIPO de cada nó (Contribuinte, Imovel, Processo)
-        self.tipos_nos = {}
+import networkx as nx
+import pandas as pd
+from typing import List, Dict, Any
 
-    def adicionar_no(self, id_no, tipo):
-        """Adiciona um nó ao grafo, se não existir."""
-        if id_no not in self.grafo:
-            self.grafo[id_no] = []
-            self.tipos_nos[id_no] = tipo
+def construir_grafo_vinculos(df_debitores: pd.DataFrame) -> nx.Graph:
+    """
+    Constrói um grafo não-direcionado conectando contribuintes (CPFs/CNPJs) 
+    por meio de conexões comuns (endereços, sócios ou ligações diretas).
+    """
+    G = nx.Graph()
 
-    def adicionar_vinculo(self, id_origem, id_destino):
-        """Cria uma aresta não-direcionada entre dois nós."""
-        # Garante que os nós existam no grafo antes de vincular
-        if id_origem in self.grafo and id_destino in self.grafo:
-            # Como a relação vai e volta (CPF dono do Imovel, Imovel pertence ao CPF)
-            self.grafo[id_origem].append(id_destino)
-            self.grafo[id_destino].append(id_origem)
+    for _, row in df_debitores.iterrows():
+        devedor = row.get("cpf_cnpj_hash") or row.get("contribuinte_id")
+        tipo_tributo = row.get("tipo_tributo", "Desconhecido")
+        valor = row.get("valor_debito", 0.0)
 
-    def buscar_rede_contribuinte(self, id_contribuinte):
-        """
-        Usa Busca em Largura (BFS) para encontrar TODOS os imóveis e processos
-        ligados direta ou indiretamente a um CPF/CNPJ.
-        """
-        if id_contribuinte not in self.grafo:
-            return "Contribuinte não encontrado."
+        if not devedor:
+            continue
 
-        visitados = set()
-        fila = [id_contribuinte]
-        rede = {'Imovel': [], 'Processo': []}
+        # Adiciona o nó do devedor com os seus atributos
+        if not G.has_node(devedor):
+            G.add_node(devedor, tipo="devedor", total_debito=0.0, num_debitos=0)
 
-        while fila:
-            no_atual = fila.pop(0)
-            if no_atual not in visitados:
-                visitados.add(no_atual)
-                
-                # Classifica o nó encontrado para o relatório
-                tipo = self.tipos_nos[no_atual]
-                if tipo in rede:
-                    rede[tipo].append(no_atual)
-                
-                # Adiciona os vizinhos na fila para explorar
-                for vizinho in self.grafo[no_atual]:
-                    if vizinho not in visitados:
-                        fila.append(vizinho)
-                        
-        return rede
+        G.nodes[devedor]["total_debito"] += valor
+        G.nodes[devedor]["num_debitos"] += 1
 
+        # Vínculo por endereço/bairro (se disponível)
+        if "bairro" in row and pd.notna(row["bairro"]):
+            bairro_node = f"BAIRRO_{row['bairro']}"
+            G.add_node(bairro_node, tipo="bairro")
+            G.add_edge(devedor, bairro_node, relacao="localizacao")
 
-if __name__ == "__main__":
-    # ==========================================
-    # CASOS DE TESTE UTILITÁRIOS (Amostra Simulada)
-    # ==========================================
-    print("Iniciando testes da estrutura de Grafos...\n")
-    
-    sefin = GrafoSefin()
+    return G
 
-    # 1. Inserindo a amostra simulada
-    sefin.adicionar_no("CPF_111222333", "Contribuinte")
-    sefin.adicionar_no("Inscricao_001", "Imovel")
-    sefin.adicionar_no("Inscricao_002", "Imovel")
-    sefin.adicionar_no("Proc_999/2025", "Processo")
-    sefin.adicionar_no("Proc_888/2026", "Processo")
+def identificar_grupos_risco(G: nx.Graph) -> List[Dict[str, Any]]:
+    """
+    Identifica componentes ligados (comunidades) no grafo para encontrar
+    grupos de devedores interconectados.
+    """
+    comunidades = []
+    for idx, componente in enumerate(nx.connected_components(G)):
+        subgrafo = G.subgraph(componente)
+        devedores = [n for n, attr in subgrafo.nodes(data=True) if attr.get("tipo") == "devedor"]
+        total_debito_grupo = sum(G.nodes[n].get("total_debito", 0.0) for n in devedores)
 
-    # 2. Criando os vínculos (Arestas)
-    sefin.adicionar_vinculo("CPF_111222333", "Inscricao_001") # CPF é dono do Imovel 1
-    sefin.adicionar_vinculo("CPF_111222333", "Inscricao_002") # CPF também é dono do Imovel 2
-    sefin.adicionar_vinculo("Inscricao_001", "Proc_999/2025") # Imovel 1 tem o processo 999
-    sefin.adicionar_vinculo("Inscricao_002", "Proc_888/2026") # Imovel 2 tem o processo 888
+        if len(devedores) > 1:  # Foca em grupos com conexões compartilhadas
+            comunidades.append({
+                "grupo_id": idx + 1,
+                "tamanho_grupo": len(devedores),
+                "total_debito": total_debito_grupo,
+                "membros": devedores
+            })
 
-    # 3. Testando a busca da "teia" do devedor
-    print("Buscando rede do Contribuinte CPF_111222333:")
-    resultado = sefin.buscar_rede_contribuinte("CPF_111222333")
-    print(resultado)
-    
-    # Validação visual do teste
-    esperado = {'Imovel': ['Inscricao_001', 'Inscricao_002'], 'Processo': ['Proc_999/2025', 'Proc_888/2026']}
-    if resultado == esperado:
-        print("\n✅ Teste passou com sucesso! A estrutura mapeou as múltiplas inscrições.")
-    else:
-        print("\n❌ Falha no teste.")
+    return comunidades
