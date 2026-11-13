@@ -1,0 +1,42 @@
+{
+  "Regressao Logistica": {
+    "limite_selecionado": 0.23,
+    "f1_validacao": 0.421,
+    "teste": {
+      "acuracia": 0.496,
+      "precisao": 0.2942,
+      "recall": 0.7391,
+      "f1_score": 0.4209,
+      "matriz_confusao": [
+        [
+          17466,
+          24524
+        ],
+        [
+          3609,
+          10222
+        ]
+      ]
+    }
+  },
+  "Arvore de Decisao": {
+    "limite_selecionado": 0.23,
+    "f1_validacao": 0.4207,
+    "teste": {
+      "acuracia": 0.4899,
+      "precisao": 0.2918,
+      "recall": 0.742,
+      "f1_score": 0.4189,
+      "matriz_confusao": [
+        [
+          17083,
+          24907
+        ],
+        [
+          3569,
+          10262
+        ]
+      ]
+    }
+  }
+}
