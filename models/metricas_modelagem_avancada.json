@@ -1,0 +1,43 @@
+{
+  "RandomForest_Temporal_Tunado": {
+    "melhores_hiperparametros": {
+      "modelo__n_estimators": 250,
+      "modelo__min_samples_split": 10,
+      "modelo__min_samples_leaf": 2,
+      "modelo__max_depth": 6
+    },
+    "validacao": {
+      "acuracia": 0.7529,
+      "f1_score": 0.0011,
+      "roc_auc": 0.6179,
+      "ks": 0.1704
+    },
+    "teste": {
+      "acuracia": 0.7524,
+      "f1_score": 0.0016,
+      "roc_auc": 0.6154,
+      "ks": 0.1682
+    }
+  },
+  "GradientBoosting_Temporal_Tunado": {
+    "melhores_hiperparametros": {
+      "modelo__subsample": 1.0,
+      "modelo__n_estimators": 150,
+      "modelo__max_depth": 3,
+      "modelo__learning_rate": 0.05
+    },
+    "validacao": {
+      "acuracia": 0.7528,
+      "f1_score": 0.0148,
+      "roc_auc": 0.6192,
+      "ks": 0.1772
+    },
+    "teste": {
+      "acuracia": 0.7524,
+      "f1_score": 0.0162,
+      "roc_auc": 0.6157,
+      "ks": 0.1663
+    }
+  },
+  "modelo_campeao": "GradientBoosting_Temporal_Tunado"
+}
