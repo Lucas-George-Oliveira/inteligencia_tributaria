@@ -5,3 +5,7 @@ __pycache__/
 .pytest_cache/
 data/bruto/ibge/
 data/bruto/ibge/
+
+# Sprint 4 - arquivos gerados pelos experimentos
+data/tratado/
+models/*.joblib

@@ -1,0 +1,22 @@
+{
+  "Regressao Logistica": {
+    "validacao": {
+      "acuracia": 0.7526,
+      "f1_score": 0.0535
+    },
+    "teste": {
+      "acuracia": 0.7516,
+      "f1_score": 0.0524
+    }
+  },
+  "Arvore de Decisao": {
+    "validacao": {
+      "acuracia": 0.7503,
+      "f1_score": 0.0555
+    },
+    "teste": {
+      "acuracia": 0.7497,
+      "f1_score": 0.0565
+    }
+  }
+}
