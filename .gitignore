@@ -9,3 +9,4 @@ data/bruto/ibge/
 # Sprint 4 - arquivos gerados pelos experimentos
 data/tratado/
 models/*.joblib
+!models/*.joblib

@@ -1,0 +1,35 @@
+{
+  "modelo_campeao": "Regressao_Logistica_Temporal",
+  "gerado_em_utc": "2026-11-17T00:51:50.685393+00:00",
+  "random_state": 42,
+  "limiar_decisao_f1": 0.23,
+  "atributos_numericos": [
+    "area_construida_m2",
+    "valor_venal",
+    "valor_iptu_anual",
+    "distancia_centro_km",
+    "exercicios_inadimplentes_5a",
+    "tempo_inadimplencia_dias",
+    "valor_divida_consolidada",
+    "qtd_parcelamentos_anteriores",
+    "parcelamento_rompido",
+    "qtd_notificacoes"
+  ],
+  "atributos_categoricos": [
+    "tipo_imovel",
+    "setor_urbano"
+  ],
+  "alvo": "inadimplente_proximo_periodo",
+  "hiperparametros": {},
+  "metricas_teste": {
+    "Modelo": "Regressao_Logistica_Temporal",
+    "Limiar_F1": 0.23,
+    "Acuracia_Teste": 0.496,
+    "Precisao_Teste": 0.2942,
+    "Recall_Teste": 0.7391,
+    "F1_Teste": 0.4209,
+    "ROC_AUC_Teste": 0.6167,
+    "KS_Teste": 0.1677
+  },
+  "sha256_modelo_campeao": "d5bbce7d35baca13daeba294dcbb945c06480c5f3d7ab9b78eef755754d75af1"
+}
