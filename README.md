@@ -147,3 +147,39 @@ Conforme o histórico de commits e pull requests da sprint:
 - **A coleta cobre cerca de 1,7% da API** (3 de cerca de 181 páginas): apenas setembro (incompleto) e outubro de 2026. Recomenda-se ampliar `--paginas` e coletar só meses fechados.
 - **`tests/test_app.py` depende de `fastapi`,** que não está em nenhum `requirements`. Por isso o comando do Passo 7 lista os testes do pipeline separadamente.
 - **O Codespace instala só o `requirements.txt`.** O Passo 2 completa as dependências.
+
+---
+
+## 4. Sprint 4 — Modelo de IA e MVP
+
+> **Dados sintéticos.** A camada individual (carteira de contribuintes) foi gerada artificialmente pela equipe (`src/ml/gerar_historico_sintetico.py`), porque a base real da dívida ativa ainda não está disponível. As métricas demonstram que o pipeline funciona, **não** que o modelo funciona no mundo real.
+
+A trilha completa (EDA → pré-processamento → split temporal → baselines → modelagem avançada → serialização) está em [`notebooks/modelo_inadimplencia.ipynb`](notebooks/modelo_inadimplencia.ipynb). Os artefatos ficam em `models/` e a carteira escorada em `data/processado/carteira_teste_escorada.csv`.
+
+### 4.1 Painel interativo (MVP — E4)
+
+```bash
+pip install -r requirements.txt
+streamlit run src/painel/painel_sefin.py
+```
+
+No Codespace, o VS Code mostra o aviso "Your application running on port 8501 is available" → clique em **Open in Browser**. Localmente, abra `http://localhost:8501`.
+
+| Aba | O que mostra |
+| :--- | :--- |
+| 🏆 Ranking | Devedores ordenados por retorno esperado ou score de recuperabilidade (0–1000), com faixa e ação recomendada; exporta CSV. IDs pseudonimizados, sem CPF/CNPJ |
+| 🗺️ Mapa por setor | Mapa de calor da inadimplência prevista por setor urbano de Palmas e matriz setor × tipo de imóvel |
+| 💰 Projeção de arrecadação | Arrecadação esperada acumulada conforme a capacidade de atendimento da equipe e por ação recomendada |
+| 🧮 Simulador | Aplica ao vivo o modelo `models/modelo_campeao_recuperabilidade.joblib` a um contribuinte digitado |
+| 📈 Métricas do modelo | Métricas de teste do modelo campeão e métricas **por subgrupo** (faixa de renda, setor), insumo da análise de fairness da Sprint 5 |
+
+O painel lê diretamente as saídas do pipeline (`models/` e `data/processado/`): ao regenerar o modelo ou a carteira, basta recarregar a página. As posições dos setores no mapa são aproximadas (centro de cada região). Testes: `python -m pytest tests/test_painel.py -v`.
+
+### 4.2 Divisão de trabalho na Sprint 4
+
+| Integrante | Entregável |
+| :--- | :--- |
+| Geovana Souza Mendonça e Rafael Vieira Lima | E1 — Metodologia de dados, split temporal e baselines |
+| Jacinto Pereira Brito | E2 — Modelagem avançada, tunagem e scoring de recuperabilidade |
+| Lucas George Oliveira Nascimento | E3 — Consolidação da trilha no notebook e serialização |
+| Pedro Santos Magalhães Neto | E4 — MVP e painel interativo no Streamlit |
