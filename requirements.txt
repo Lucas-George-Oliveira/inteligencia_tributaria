@@ -26,3 +26,7 @@ joblib              # Para salvar/carregar os modelos e normalizadores treinados
 # === Governança Algorítmica (Fairness) ===
 shap                # Explicabilidade algorítmica exigida pela LGPD
 lime                # Explicabilidade algorítmica exigida pela LGPD
+# === Execução de Notebooks (Entrega E3) ===
+ipykernel
+nbconvert
+pytest
