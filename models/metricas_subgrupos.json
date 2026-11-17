@@ -1,0 +1,205 @@
+{
+  "modelo": "Regressao_Logistica_Temporal",
+  "limiar_decisao": 0.23,
+  "conjunto": "teste (split temporal)",
+  "periodos_teste": [
+    "2024-10-01",
+    "2024-11-01",
+    "2024-12-01"
+  ],
+  "registros_teste": 55821,
+  "geral": {
+    "n": 55821,
+    "taxa_real": 0.24777413518209992,
+    "taxa_selecao": 0.6226330592429372,
+    "tpr_recall": 0.739209023208734,
+    "fpr": 0.5842343415098833,
+    "precisao": 0.2941650362527333,
+    "roc_auc": 0.6166806933126278
+  },
+  "subgrupos": {
+    "faixa_renda_setor": {
+      "metricas": [
+        {
+          "grupo": "alta",
+          "n": 11844,
+          "taxa_real": 0.2333,
+          "taxa_selecao": 0.5575,
+          "tpr_recall": 0.6833,
+          "fpr": 0.5192,
+          "precisao": 0.2859,
+          "roc_auc": 0.6175
+        },
+        {
+          "grupo": "baixa",
+          "n": 23928,
+          "taxa_real": 0.2593,
+          "taxa_selecao": 0.6888,
+          "tpr_recall": 0.7905,
+          "fpr": 0.6532,
+          "precisao": 0.2976,
+          "roc_auc": 0.6094
+        },
+        {
+          "grupo": "media",
+          "n": 20049,
+          "taxa_real": 0.2426,
+          "taxa_selecao": 0.5822,
+          "tpr_recall": 0.7056,
+          "fpr": 0.5426,
+          "precisao": 0.294,
+          "roc_auc": 0.6205
+        }
+      ],
+      "fairness": {
+        "razao_paridade_demografica": 0.8094,
+        "diferenca_taxa_selecao": 0.1313,
+        "diferenca_igualdade_oportunidade_tpr": 0.1071,
+        "diferenca_fpr": 0.134,
+        "diferenca_taxa_real": 0.026
+      }
+    },
+    "setor_urbano": {
+      "metricas": [
+        {
+          "grupo": "Area de Expansao",
+          "n": 2925,
+          "taxa_real": 0.2431,
+          "taxa_selecao": 0.5853,
+          "tpr_recall": 0.7018,
+          "fpr": 0.5479,
+          "precisao": 0.2915,
+          "roc_auc": 0.6062
+        },
+        {
+          "grupo": "Aureny",
+          "n": 9546,
+          "taxa_real": 0.2575,
+          "taxa_selecao": 0.6812,
+          "tpr_recall": 0.7929,
+          "fpr": 0.6425,
+          "precisao": 0.2997,
+          "roc_auc": 0.6162
+        },
+        {
+          "grupo": "Jardim Aureny IV",
+          "n": 4047,
+          "taxa_real": 0.2281,
+          "taxa_selecao": 0.5903,
+          "tpr_recall": 0.7042,
+          "fpr": 0.5567,
+          "precisao": 0.2721,
+          "roc_auc": 0.6081
+        },
+        {
+          "grupo": "Plano Diretor Norte",
+          "n": 8289,
+          "taxa_real": 0.2342,
+          "taxa_selecao": 0.5274,
+          "tpr_recall": 0.6553,
+          "fpr": 0.4883,
+          "precisao": 0.2909,
+          "roc_auc": 0.6136
+        },
+        {
+          "grupo": "Plano Diretor Sul",
+          "n": 13077,
+          "taxa_real": 0.247,
+          "taxa_selecao": 0.579,
+          "tpr_recall": 0.7068,
+          "fpr": 0.537,
+          "precisao": 0.3015,
+          "roc_auc": 0.6268
+        },
+        {
+          "grupo": "Setor Comercial Central",
+          "n": 3555,
+          "taxa_real": 0.2312,
+          "taxa_selecao": 0.6276,
+          "tpr_recall": 0.7494,
+          "fpr": 0.5909,
+          "precisao": 0.2761,
+          "roc_auc": 0.6283
+        },
+        {
+          "grupo": "Taquaralto",
+          "n": 10323,
+          "taxa_real": 0.2628,
+          "taxa_selecao": 0.6853,
+          "tpr_recall": 0.7807,
+          "fpr": 0.6512,
+          "precisao": 0.2994,
+          "roc_auc": 0.601
+        },
+        {
+          "grupo": "Taquari",
+          "n": 4059,
+          "taxa_real": 0.2545,
+          "taxa_selecao": 0.7154,
+          "tpr_recall": 0.8103,
+          "fpr": 0.6831,
+          "precisao": 0.2882,
+          "roc_auc": 0.6142
+        }
+      ],
+      "fairness": {
+        "razao_paridade_demografica": 0.7372,
+        "diferenca_taxa_selecao": 0.188,
+        "diferenca_igualdade_oportunidade_tpr": 0.1549,
+        "diferenca_fpr": 0.1947,
+        "diferenca_taxa_real": 0.0347
+      }
+    },
+    "tipo_imovel": {
+      "metricas": [
+        {
+          "grupo": "comercial",
+          "n": 10362,
+          "taxa_real": 0.2389,
+          "taxa_selecao": 0.596,
+          "tpr_recall": 0.722,
+          "fpr": 0.5565,
+          "precisao": 0.2893,
+          "roc_auc": 0.6171
+        },
+        {
+          "grupo": "industrial",
+          "n": 1623,
+          "taxa_real": 0.2446,
+          "taxa_selecao": 0.6118,
+          "tpr_recall": 0.7506,
+          "fpr": 0.5669,
+          "precisao": 0.3001,
+          "roc_auc": 0.6308
+        },
+        {
+          "grupo": "residencial",
+          "n": 39912,
+          "taxa_real": 0.2467,
+          "taxa_selecao": 0.6063,
+          "tpr_recall": 0.7222,
+          "fpr": 0.5684,
+          "precisao": 0.2938,
+          "roc_auc": 0.6143
+        },
+        {
+          "grupo": "terreno",
+          "n": 3924,
+          "taxa_real": 0.2836,
+          "taxa_selecao": 0.8631,
+          "tpr_recall": 0.9236,
+          "fpr": 0.8392,
+          "precisao": 0.3035,
+          "roc_auc": 0.6236
+        }
+      ],
+      "fairness": {
+        "razao_paridade_demografica": 0.6905,
+        "diferenca_taxa_selecao": 0.2671,
+        "diferenca_igualdade_oportunidade_tpr": 0.2016,
+        "diferenca_fpr": 0.2827,
+        "diferenca_taxa_real": 0.0448
+      }
+    }
+  }
+}
