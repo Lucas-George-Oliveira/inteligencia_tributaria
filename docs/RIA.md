@@ -43,41 +43,53 @@ inferior.
 
 ### 2.2 Resultados Obtidos (Cenário Original vs. Cenário Mitigado)
 
-##  A) Recorte por Faixa de Renda do Setor (faixa_renda_setor)
+### 2.2 Resultados Obtidos (Cenário Original vs. Cenário Mitigado)
 
-Subgrupo,   Amostras (N),  Taxa Real (Y=1),  Taxa de Seleção (Original),   Taxa de Seleção (Mitigado),  Igualdade de Oportunidade / TPR (Original),   Igualdade de Oportunidade / TPR (Mitigado),Limiar Ajustado
-Alta Renda,11.844,"23,33%","55,75%","68,00%","68,33%","79,41%","0,220"
-Média Renda,20.049,"24,26%","58,22%","64,66%","70,56%","76,07%","0,220"
-Baixa Renda,23.928,"25,93%","68,88%","68,88%","79,05%","79,05%","0,230"
+#### A) Recorte por Faixa de Renda do Setor (`faixa_renda_setor`)
 
-#   Indicadores de Disparidade:
-No modelo original, a Razão de Paridade Demográfica foi de $0{,}8094$ (no limite inferior da faixa aceitável de $0{,}80$), com 
-diferença de $13{,}13$ p.p. na taxa de seleção e $10{,}71$ p.p. na Igualdade de Oportunidade ($TPR$) entre baixa e alta renda. 
-Após o ajuste fino de limiares ($0{,}22$ para alta e média renda; $0{,}23$ para baixa renda), a Razão de Paridade Demográfica 
-subiu para $0{,}9388$ e a diferença de $TPR$ caiu para $3{,}34$ p.p., mantendo o $F_1\text{-Score}$ global praticamente 
-inalterado ($0{,}4207$).
-.(Inserir aqui a figura: docs/figuras/ria_mitigacao_faixa_renda_setor.png)
+| Subgrupo | Amostras ($N$) | Taxa Real ($Y=1$) | Taxa de Seleção (Original) | Taxa de Seleção (Mitigado) | Igualdade de Oportunidade / TPR (Original) | Igualdade de Oportunidade / TPR (Mitigado) | Limiar Ajustado |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Alta Renda** | 11.844 | 23,33% | 55,75% | 68,00% | 68,33% | 79,41% | 0,220 |
+| **Média Renda** | 20.049 | 24,26% | 58,22% | 64,66% | 70,56% | 76,07% | 0,220 |
+| **Baixa Renda** | 23.928 | 25,93% | 68,88% | 68,88% | 79,05% | 79,05% | 0,230 |
 
-##  B) Recorte por Setor Urbano (setor_urbano)
-Subgrupo Amostras(N) Taxa Real (Y=1)  Taxa de Seleção(Original) Taxa de Seleção(Mitigado)  Igualdade de Oportunidade / TPR (Original)Igualdade de Oportunidade / TPR (Mitigado)Limiar Ajustado Área de Expansão2.
-92524,31%58,53%75,62%70,18%83,83%0,210Aureny9.54625,75%68,12%69,12%79,29%80,19%0,225Jardim Aureny IV4.04722,81%59,03%70,84%70,
-42%80,50%0,215Plano Diretor Norte8.28923,42%52,74%70,41%65,53%81,30%0,215Plano Diretor Sul13.07724,70%57,90%66,16%70,68%77,43%0,
-220Setor Comercial Central3.55523,12%62,76%68,10%74,94%80,90%0,225Taquaralto10.32326,28%68,53%74,92%78,07%82,82%0,220Taquari4.
-05925,45%71,54%71,54%81,03%81,03%0,230
+* **Indicadores de Disparidade:** No modelo original, a Razão de Paridade Demográfica foi de $0{,}8094$ (no limite inferior da faixa aceitável de $0{,}80$), com diferença de $13{,}13\text{ p.p.}$ na taxa de seleção e $10{,}71\text{ p.p.}$ na Igualdade de Oportunidade ($\text{TPR}$) entre baixa e alta renda. Após o ajuste fino de limiares ($0{,}22$ para alta e média renda; $0{,}23$ para baixa renda), a Razão de Paridade Demográfica subiu para $0{,}9388$ e a diferença de $\text{TPR}$ caiu para $3{,}34\text{ p.p.}$, mantendo o $F_1\text{-Score}$ global praticamente inalterado ($0{,}4207$).
 
-# Indicadores de Disparidade: Antes da mitigação, o recorte territorial violava a Regra dos 4/5, apresentando Razão de Paridade 
-Demográfica de $0{,}7372$ (comparando Plano Diretor Norte, com $52{,}74\%$, e Taquari, com $71{,}54\%$) e diferença de $15{,}49$ 
-p.p. no $TPR$. Com a calibração de limiares específicos por setor (variando entre $0{,}210$ e $0{,}230$), a Razão de Paridade 
-Demográfica elevou-se para $0{,}8749$ (dentro da conformidade $\ge 0{,}80$) e a diferença de $TPR$ reduziu-se para $6{,}40$ p.p. 
-($F_1\text{-Score}$ global de $0{,}4199$).
-.(Inserir aqui a figura: docs/figuras/ria_mitigacao_setor_urbano.png)
+![Mitigação de Viés por Faixa de Renda do Setor](figuras/ria_mitigacao_faixa_renda_setor.png)
 
-##  C) Recorte por Tipo de Imóvel (tipo_imovel)
-SubgrupoAmostras (N)Taxa Real (Y=1)Taxa de Seleção (Original)Taxa de Seleção (Mitigado)Igualdade de Oportunidade / TPR (Original)
-Igualdade de Oportunidade / TPR (Mitigado)Limiar AjustadoComercial10.36223,89%59,60%85,43%72,20%91,84%0,175Industrial1.62324,
-46%61,18%84,47%75,06%91,69%0,170Residencial39.91224,67%60,63%85,47%72,22%91,27%0,175Terreno3.92428,36%86,31%86,31%92,36%92,36%0,
-230
+---
 
+#### B) Recorte por Setor Urbano (`setor_urbano`)
+
+| Subgrupo | Amostras ($N$) | Taxa Real ($Y=1$) | Taxa de Seleção (Original) | Taxa de Seleção (Mitigado) | Igualdade de Oportunidade / TPR (Original) | Igualdade de Oportunidade / TPR (Mitigado) | Limiar Ajustado |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Área de Expansão** | 2.925 | 24,31% | 58,53% | 75,62% | 70,18% | 83,83% | 0,210 |
+| **Aureny** | 9.546 | 25,75% | 68,12% | 79,12% | 79,29% | 80,19% | 0,225 |
+| **Jardim Aureny IV** | 4.047 | 22,81% | 59,03% | 70,84% | 70,42% | 80,50% | 0,215 |
+| **Plano Diretor Norte** | 8.289 | 23,42% | 52,74% | 70,41% | 65,53% | 81,30% | 0,215 |
+| **Plano Diretor Sul** | 13.077 | 24,70% | 57,90% | 66,16% | 70,68% | 77,43% | 0,220 |
+| **Setor Comercial Central** | 3.555 | 23,12% | 62,76% | 68,10% | 74,94% | 80,90% | 0,225 |
+| **Taquaralto** | 10.323 | 26,28% | 68,53% | 74,92% | 78,07% | 82,82% | 0,220 |
+| **Taquari** | 4.059 | 25,45% | 71,54% | 71,54% | 81,03% | 81,03% | 0,230 |
+
+* **Indicadores de Disparidade:** Antes da mitigação, o recorte territorial violava a Regra dos 4/5, apresentando Razão de Paridade Demográfica de $0{,}7372$ (comparando Plano Diretor Norte, com $52{,}74\%$, e Taquari, com $71{,}54\%$) e diferença de $15{,}49\text{ p.p.}$ no $\text{TPR}$. Com a calibração de limiares específicos por setor (variando entre $0{,}210$ e $0{,}230$), a Razão de Paridade Demográfica elevou-se para $0{,}8749$ (dentro da conformidade $\ge 0{,}80$) e a diferença de $\text{TPR}$ reduziu-se para $6{,}40\text{ p.p.}$ ($F_1\text{-Score}$ global de $0{,}4199$).
+
+![Mitigação de Viés por Setor Urbano](figuras/ria_mitigacao_setor_urbano.png)
+
+---
+
+#### C) Recorte por Tipo de Imóvel (`tipo_imovel`)
+
+| Subgrupo | Amostras ($N$) | Taxa Real ($Y=1$) | Taxa de Seleção (Original) | Taxa de Seleção (Mitigado) | Igualdade de Oportunidade / TPR (Original) | Igualdade de Oportunidade / TPR (Mitigado) | Limiar Ajustado |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Comercial** | 10.362 | 23,89% | 59,60% | 85,43% | 72,20% | 91,84% | 0,175 |
+| **Industrial** | 1.623 | 24,46% | 61,18% | 84,47% | 75,06% | 91,69% | 0,170 |
+| **Residencial** | 39.912 | 24,67% | 60,63% | 85,47% | 72,22% | 91,27% | 0,175 |
+| **Terreno** | 3.924 | 28,36% | 86,31% | 86,31% | 92,36% | 92,36% | 0,230 |
+
+* **Indicadores de Disparidade:** Este foi o recorte de maior assimetria no modelo original, com Razão de Paridade Demográfica de $0{,}6905$ (abaixo do limiar de $0{,}80$) e diferença de $20{,}16\text{ p.p.}$ no $\text{TPR}$ entre imóveis comerciais ($72{,}20\%$) e terrenos ($92{,}36\%$). Após a mitigação pós-processamento, a Razão de Paridade Demográfica atingiu $0{,}9787$ e a diferença de $\text{TPR}$ caiu para apenas $1{,}10\text{ p.p.}$ ($F_1\text{-Score}$ global de $0{,}4111$).
+
+![Mitigação de Viés por Tipo de Imóvel](figuras/ria_mitigacao_tipo_imovel.png)
 # Indicadores de Disparidade: Este foi o recorte de maior assimetria no modelo original, com Razão de Paridade Demográfica de $0
 {,}6905$ (abaixo do limiar de $0{,}80$) e diferença de $20{,}16$ p.p. no $TPR$ entre imóveis comerciais ($72{,}20\%$) e terrenos 
 ($92{,}36\%$). Após a mitigação pós-processamento, a Razão de Paridade Demográfica atingiu $0{,}9787$ e a diferença de $TPR$ caiu 
@@ -102,3 +114,78 @@ $\58\%$. Contudo, assume-se de forma transparente o trade-off operacional: ao re
 de seleção e leve queda na precisão média (de $\sim 29\%$ para $\sim 26\%$). Portanto, recomenda-se que a mitigação por limiar 
 seja utilizada em conjunto com triagem humana e réguas de cobrança amigável (preventiva), evitando medidas coercitivas 
 automáticas baseadas exclusivamente no escore.
+
+## 3. Interpretabilidade e Direito à Explicação (Art. 20 da LGPD)
+
+### 3.1 Fundamento Legal e Arquitetura de Explicabilidade
+Em conformidade com o **Art. 20 da Lei Geral de Proteção de Dados (Lei nº 13.709/2018)**, o titular dos dados tem o direito de 
+solicitar a revisão de decisões tomadas unicamente com base em tratamento automatizado de dados pessoais que afetem seus 
+interesses, bem como de receber informações claras e adequadas a respeito dos critérios e dos procedimentos utilizados.
+
+Para assegurar transparência auditável e explicabilidade tanto em nível global (comportamento geral do modelo) quanto local 
+(justificativa individualizada por inscrição imobiliária), empregou-se a técnica **SHAP (*SHapley Additive exPlanations*)** por 
+meio do `shap.LinearExplainer` sobre o modelo campeão (**Regressão Logística Temporal**, valor-base $E[f(x)] = -1{,}0003$ em 
+*log-odds*, equivalente a uma probabilidade média base de $\approx 26{,}89\%$, e limiar de decisão de $0{,}23$). Além disso, como 
+medida de governança institucional da Sefin Palmas, nenhuma medida coercitiva (como protesto extrajudicial ou ajuizamento de 
+execução fiscal) é disparada automaticamente pelo algoritmo sem revisão prévia de um auditor fiscal.
+
+---
+
+### 3.2 Explicabilidade Global (Principais Variáveis do Modelo)
+A análise da média absoluta dos valores SHAP ($|\text{SHAP}|$) em toda a carteira de teste demonstra que as predições do modelo 
+são fortemente ancoradas no histórico objetivo de adimplência fiscal do imóvel, reduzindo a dependência de atributos puramente 
+territoriais:
+
+| Ranking | Variável (`feature`) | Impacto Médio Absoluto ($\|\text{SHAP}\|$) | Interpretação Técnica |
+| :---: | :--- | :---: | :--- |
+| **1º** | `exercicios_inadimplentes_5a` | **0,2753** | Principal preditor global: quantidade de exercícios em atraso nos últimos 
+5 anos. |
+| **2º** | `parcelamento_rompido` | **0,0877** | Histórico de quebra de acordos anteriores de parcelamento tributário. |
+| **3º** | `tipo_imovel_residencial` | **0,0869** | Diferenciação de comportamento entre imóveis residenciais e terrenos não 
+edificados. |
+| **4º** | `tipo_imovel_comercial` | **0,0621** | Perfil de adimplência específico de imóveis comerciais. |
+| **5º** | `setor_urbano_Plano Diretor Sul` | **0,0356** | Ajuste territorial referente ao setor Plano Diretor Sul. |
+| **6º** | `valor_divida_consolidada` | **0,0321** | Montante acumulado da dívida ativa consolidada (R$). |
+| **7º** | `setor_urbano_Taquaralto` | **0,0290** | Ajuste territorial referente ao setor Taquaralto. |
+| **8º** | `setor_urbano_Aureny` | **0,0288** | Ajuste territorial referente à região dos Aurenys. |
+| **9º** | `valor_venal` | **0,0164** | Avaliação venal do imóvel no cadastro imobiliário. |
+| **10º** | `setor_urbano_Taquari` | **0,0160** | Ajuste territorial referente ao setor Taquari. |
+| **11º** | `tipo_imovel_industrial` | **0,0156** | Perfil de adimplência de imóveis industriais. |
+| **12º** | `setor_urbano_Plano Diretor Norte` | **0,0134** | Ajuste territorial referente ao setor Plano Diretor Norte. |
+
+![Importância Global das Variáveis - SHAP](figuras/ria_shap_global.png)
+
+---
+
+### 3.3 Explicabilidade Local (Estudo de Caso Real — Art. 20 da LGPD)
+
+Para demonstrar como a Secretaria da Fazenda pode responder de forma objetiva a um pedido de esclarecimento ou revisão formulado 
+por um contribuinte nos termos do Art. 20 da LGPD, apresenta-se a decomposição SHAP do **Registro de Teste `#0`**, classificado 
+acima do limiar operacional ($0{,}23$) com probabilidade estimada de inadimplência de **$56{,}87\%$**:
+
+* **Perfil do Imóvel Auditado (Registro `#0`):** Imóvel residencial localizado no *Setor Comercial Central* ($2{,}19\text{ km}$ 
+do centro), área construída de $311{,}20\text{ m}^2$, valor venal de $\text{R\$ } 2.109.034{,}97$, IPTU anual de $\text{R\$ } 14.
+521{,}53$, dívida consolidada de $\text{R\$ } 68.779{,}11$, **3 exercícios inadimplentes nos últimos 5 anos** ($598$ dias de 
+atraso), 2 notificações emitidas e **nenhum parcelamento rompido** (`0`).
+
+| Fator Explicativo (`feature`) | Dado Observado no Cadastro | Contribuição SHAP (*Log-Odds*) | Efeito na Predição |
+| :--- | :---: | :---: | :--- |
+| `valor_divida_consolidada` | R$ 68.779,11 | **+0,7837** | Aumenta risco |
+| `exercicios_inadimplentes_5a` | 3 exercícios | **+0,3819** | Aumenta risco |
+| `valor_venal` | R$ 2.109.034,97 | **+0,1655** | Aumenta risco |
+| `tipo_imovel_residencial` | Sim (`residencial`) | **-0,0569** | Reduz risco |
+| `parcelamento_rompido` | Não (`0`) | **-0,0430** | Reduz risco |
+| `setor_urbano_Setor Comercial Central` | Sim (`Setor Comercial Central`) | **-0,0282** | Reduz risco |
+| `distancia_centro_km` | 2,19 km | **-0,0214** | Reduz risco |
+
+![Explicação Individual SHAP - Registro #0](figuras/ria_shap_individual.png)
+
+#### Tradução em Linguagem Clara para Atendimento ao Contribuinte
+Em eventual solicitação administrativa fundamentada no Art. 20 da LGPD, o sistema permite emitir o seguinte parecer explicativo 
+auditável:
+> *"A classificação de risco elevado (56,87%, acima do corte operacional de 23,00%) decorreu fundamentalmente do montante 
+acumulado da dívida consolidada (R$ 68.779,11; impacto SHAP +0,7837) e da recorrência de 3 exercícios inadimplentes nos últimos 
+cinco anos (impacto SHAP +0,3819). Em sentido contrário, atuaram como atenuantes do risco o fato de o imóvel ser residencial (-0,
+0569), não possuir histórico de parcelamento rompido (-0,0430) e estar situado no Setor Comercial Central (-0,0282). Caso haja 
+pagamento, parcelamento ativo ou contestação administrativa dos débitos registrados, o titular poderá requerer revisão humana 
+imediata junto ao atendimento da Sefin."*
