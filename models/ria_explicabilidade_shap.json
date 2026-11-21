@@ -1,0 +1,135 @@
+{
+  "modelo": "Regressao_Logistica_Temporal",
+  "limiar_decisao": 0.23,
+  "valor_base_log_odds": -1.0003,
+  "importancia_global_top12": [
+    {
+      "feature": "numericas__exercicios_inadimplentes_5a",
+      "shap_medio_abs": 0.2753
+    },
+    {
+      "feature": "numericas__parcelamento_rompido",
+      "shap_medio_abs": 0.0877
+    },
+    {
+      "feature": "categoricas__tipo_imovel_residencial",
+      "shap_medio_abs": 0.0869
+    },
+    {
+      "feature": "categoricas__tipo_imovel_comercial",
+      "shap_medio_abs": 0.0621
+    },
+    {
+      "feature": "categoricas__setor_urbano_Plano Diretor Sul",
+      "shap_medio_abs": 0.0356
+    },
+    {
+      "feature": "numericas__valor_divida_consolidada",
+      "shap_medio_abs": 0.0321
+    },
+    {
+      "feature": "categoricas__setor_urbano_Taquaralto",
+      "shap_medio_abs": 0.029
+    },
+    {
+      "feature": "categoricas__setor_urbano_Aureny",
+      "shap_medio_abs": 0.0288
+    },
+    {
+      "feature": "numericas__valor_venal",
+      "shap_medio_abs": 0.0164
+    },
+    {
+      "feature": "categoricas__setor_urbano_Taquari",
+      "shap_medio_abs": 0.016
+    },
+    {
+      "feature": "categoricas__tipo_imovel_industrial",
+      "shap_medio_abs": 0.0156
+    },
+    {
+      "feature": "categoricas__setor_urbano_Plano Diretor Norte",
+      "shap_medio_abs": 0.0134
+    }
+  ],
+  "exemplo_individual_art20": {
+    "indice_teste": 0,
+    "dados_entrada": {
+      "area_construida_m2": 311.2,
+      "valor_venal": 2109034.97,
+      "valor_iptu_anual": 14521.53,
+      "distancia_centro_km": 2.19,
+      "exercicios_inadimplentes_5a": 3,
+      "tempo_inadimplencia_dias": 598,
+      "valor_divida_consolidada": 68779.11,
+      "qtd_parcelamentos_anteriores": 0,
+      "parcelamento_rompido": 0,
+      "qtd_notificacoes": 2,
+      "tipo_imovel": "residencial",
+      "setor_urbano": "Setor Comercial Central",
+      "prob_inadimplencia": 0.5687
+    },
+    "principais_fatores_shap": [
+      {
+        "feature": "numericas__valor_divida_consolidada",
+        "valor_transformado": 15.0849,
+        "contribuicao_shap": 0.7837,
+        "direcao": "Aumenta risco"
+      },
+      {
+        "feature": "numericas__exercicios_inadimplentes_5a",
+        "valor_transformado": 1.1618,
+        "contribuicao_shap": 0.3819,
+        "direcao": "Aumenta risco"
+      },
+      {
+        "feature": "numericas__valor_venal",
+        "valor_transformado": 7.1,
+        "contribuicao_shap": 0.1655,
+        "direcao": "Aumenta risco"
+      },
+      {
+        "feature": "categoricas__tipo_imovel_residencial",
+        "valor_transformado": 1.0,
+        "contribuicao_shap": -0.0569,
+        "direcao": "Reduz risco"
+      },
+      {
+        "feature": "numericas__parcelamento_rompido",
+        "valor_transformado": -0.4141,
+        "contribuicao_shap": -0.043,
+        "direcao": "Reduz risco"
+      },
+      {
+        "feature": "categoricas__tipo_imovel_comercial",
+        "valor_transformado": 0.0,
+        "contribuicao_shap": 0.0347,
+        "direcao": "Aumenta risco"
+      },
+      {
+        "feature": "categoricas__setor_urbano_Setor Comercial Central",
+        "valor_transformado": 1.0,
+        "contribuicao_shap": -0.0282,
+        "direcao": "Reduz risco"
+      },
+      {
+        "feature": "categoricas__setor_urbano_Plano Diretor Sul",
+        "valor_transformado": 0.0,
+        "contribuicao_shap": 0.0266,
+        "direcao": "Aumenta risco"
+      },
+      {
+        "feature": "numericas__distancia_centro_km",
+        "valor_transformado": -1.3836,
+        "contribuicao_shap": -0.0214,
+        "direcao": "Reduz risco"
+      },
+      {
+        "feature": "categoricas__setor_urbano_Aureny",
+        "valor_transformado": 0.0,
+        "contribuicao_shap": 0.0191,
+        "direcao": "Aumenta risco"
+      }
+    ]
+  }
+}
