@@ -24,24 +24,22 @@ O sistema processa dados cadastrais, imobiliários e fiscais estruturados confor
 * **Ambiente Atual:** A base utilizada (`data/bruto/carteira_contribuintes_sintetica.csv`) é sintética, gerada apenas para validação acadêmica.
 * **Retenção Proposta (Produção):** Os registros de auditoria (`LOG_AUDITORIA`) devem ser retidos por 5 anos (alinhado ao prazo prescricional tributário do Art. 174 do CTN) com acesso restrito por perfil (`ANALISTA_FISCAL`). Os scores (`SCORE_RECUPERABILIDADE`) têm validade mensal, sendo atualizados a cada ciclo de escoragem.
 
-### 2.  Análise de Fairness (Justiça Algorítmica) e Mitigação de Vieses
-##  2.1 Metodologia e Métricas Avaliadas
+## 2.  Análise de Fairness (Justiça Algorítmica) e Mitigação de Vieses
+###  2.1 Metodologia e Métricas Avaliadas
 Para verificar se o modelo campeão (Regressão Logística Temporal, com limiar de decisão original de $0{,}23$ e $F_1\text{-Score}$ 
 global de $0{,}4209$) reproduz ou amplifica desigualdades socioeconômicas ou territoriais sobre a carteira de teste  ( $N = 55.
 821$ registros), realizou-se uma auditoria quantitativa utilizando a biblioteca Fairlearn. Foram avaliados três recortes   
 sensíveis — faixa de renda do setor, setor urbano e tipo de imóvel — sob dois critérios formais de equidade:
 
-#   Paridade Demográfica (Demographic Parity):  
+* **Paridade Demográfica (Demographic Parity):**  
 Avalia se a proporção de contribuintes  sinalizados como risco de inadimplência ($\hat{Y} = 1$, chamada de Taxa de Seleção) é 
 equilibrada entre os grupos. Adota-se como referência regulatória a Regra dos Quatro  Quintos (4/5), segundo a qual a razão entre 
 a menor e a maior taxa de seleção deve ser $\ge 0{,}80$.
 
-#   Igualdade de Oportunidade (Equal Opportunity):
+⁠* **Igualdade de Oportunidade (Equal Opportunity):**
 Mede se a Taxa de Verdadeiros Positivos ($TPR / \text{Recall}$) é equivalente entre os grupos para os contribuintes que 
 efetivamente se tornaram inadimplentes ($Y = 1$), garantindo que nenhum subgrupo tenha capacidade preditiva sistematicamente 
 inferior.
-
-### 2.2 Resultados Obtidos (Cenário Original vs. Cenário Mitigado)
 
 ### 2.2 Resultados Obtidos (Cenário Original vs. Cenário Mitigado)
 
@@ -56,8 +54,6 @@ inferior.
 * **Indicadores de Disparidade:** No modelo original, a Razão de Paridade Demográfica foi de $0{,}8094$ (no limite inferior da faixa aceitável de $0{,}80$), com diferença de $13{,}13\text{ p.p.}$ na taxa de seleção e $10{,}71\text{ p.p.}$ na Igualdade de Oportunidade ($\text{TPR}$) entre baixa e alta renda. Após o ajuste fino de limiares ($0{,}22$ para alta e média renda; $0{,}23$ para baixa renda), a Razão de Paridade Demográfica subiu para $0{,}9388$ e a diferença de $\text{TPR}$ caiu para $3{,}34\text{ p.p.}$, mantendo o $F_1\text{-Score}$ global praticamente inalterado ($0{,}4207$).
 
 ![Mitigação de Viés por Faixa de Renda do Setor](figuras/ria_mitigacao_faixa_renda_setor.png)
-
----
 
 #### B) Recorte por Setor Urbano (`setor_urbano`)
 
@@ -96,8 +92,8 @@ inferior.
 para apenas $1{,}10$ p.p. ($F_1\text{-Score}$ global de $0{,}4111$)
 .(Inserir aqui a figura: docs/figuras/ria_mitigacao_tipo_imovel.png)
 
-##  2.3 Discussão Honesta dos Vieses e Estratégia de Mitigação
-# 1. Diagnóstico das Causas: 
+###  2.3 Discussão Honesta dos Vieses e Estratégia de Mitigação
+1. **Diagnóstico das Causas:**
 Observa-se que o modelo original tende a sinalizar proporcionalmente mais contribuintes de baixa renda ($68{,}88\%$ vs. $55{,}75\%$ na alta renda) e de regiões periféricas/em expansão (Taquari com $71{,}54\%$ e Taquaralto com $68{,}53\%$ vs. Plano Diretor 
 Norte com $52{,}74\%$), embora a diferença na inadimplência real entre esses grupos seja de apenas $2{,}6$ a $3{,}5$ pontos 
 percentuais. Isso ocorre porque variáveis socioeconômicas territoriais e o histórico de parcelamentos anteriores possuem forte 
@@ -106,10 +102,9 @@ correlação com a renda do setor, fazendo com que o algoritmo penalize despropo
 por tipo de imóvel, terrenos apresentam maior inadimplência real ($28{,}36\%$) e comportamento histórico 
 mais volátil, levando o limiar único a sub-sinalizar imóveis comerciais e residenciais.
 
-#  2. Eficácia e Trade-off da Mitigação:
+2. **Eficácia e Trade-off da Mitigação:**
 A aplicação de mitigação pós-processamento via otimização de limiares por subgrupo demonstrou-se eficaz para restaurar a equidade 
-sem necessidade de alterar a arquitetura do modelo treinado. Em todos os recortes, a Razão de Paridade Demográfica passou a 
-$\58\%$. Contudo, assume-se de forma transparente o trade-off operacional: ao reduzir o limiar de corte para equalizar o $TPR$ 
+sem necessidade de alterar a arquitetura do modelo treinado. Em todos os recortes, a Razão de Paridade Demográfica passou a superar o patamar regulatório de $0{,}80$ (atingindo $0{,}87$ a $0{,}98$). Contudo, assume-se de forma transparente o trade-off operacional: ao reduzir o limiar de corte para equalizar o $TPR$ 
 (especialmente no recorte de tipo de imóvel, onde os limiares caíram para $0{,}170\text{–}0{,}175$), há elevação na taxa global 
 de seleção e leve queda na precisão média (de $\sim 29\%$ para $\sim 26\%$). Portanto, recomenda-se que a mitigação por limiar 
 seja utilizada em conjunto com triagem humana e réguas de cobrança amigável (preventiva), evitando medidas coercitivas 
