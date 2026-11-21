@@ -184,3 +184,31 @@ cinco anos (impacto SHAP +0,3819). Em sentido contrário, atuaram como atenuante
 0569), não possuir histórico de parcelamento rompido (-0,0430) e estar situado no Setor Comercial Central (-0,0282). Caso haja 
 pagamento, parcelamento ativo ou contestação administrativa dos débitos registrados, o titular poderá requerer revisão humana 
 imediata junto ao atendimento da Sefin."*
+
+
+## 4. Análise de Impactos Sociais, Riscos e Plano de Auditoria Contínua
+
+### 4.1 Mapeamento de Impactos Sociais Positivos e Riscos de Exclusão
+A implantação de modelos preditivos na gestão da dívida ativa da Secretaria da Fazenda de Palmas (Sefin) gera externalidades diretas sobre a eficiência arrecadatória do Município e sobre as garantias fundamentais dos contribuintes. A avaliação de impacto socioeconômico abaixo fundamenta as salvaguardas operacionais do sistema:
+
+* **Impactos Sociais Positivos:**
+  * **Justiça Fiscal e Capacidade de Investimento:** A priorização baseada em propensão de pagamento permite direcionar esforços administrativos aos devedores com maior capacidade contributiva e liquidez, incrementando a receita própria do Município para políticas públicas essenciais (saúde, educação e infraestrutura urbana) sem elevação de alíquotas tributárias.
+  * **Proteção Efetiva a Grupos Vulneráveis:** A trava determinística implementada na etapa de pré-processamento (`src/ml/preparar_base.py`), que exclui formalmente **1.393 beneficiários do IPTU Social** (idosos, aposentados, pensionistas e pessoas com deficiência de baixa renda), assegura que cidadãos em situação de hipossuficiência não sejam expostos a fluxos automatizados de cobrança ou restrições cadastrais.
+  * **Desjudicialização e Redução de Custos Operacionais:** O acionamento preventivo por meio de réguas amigáveis (comunicados digitais, alertas de vencimento e propostas de parcelamento facilitado) antes do protesto extrajudicial ou do ajuizamento de execução fiscal evita o bloqueio patrimonial de contribuintes adimplentes eventuais e reduz a sobrecarga do Judiciário local.
+
+* **Riscos Sociais Identificados e Salvaguardas:**
+  * **Risco de Estigmatização Territorial (Falsos Positivos em Áreas Periféricas):** Conforme evidenciado na auditoria de equidade (Seção 2), a aplicação de um limiar único global penalizaria desproporcionalmente regiões periféricas e de menor renda (como Taquari e Taquaralto, com taxas de sinalização até $18{,}8\text{ p.p.}$ acima do Plano Diretor Norte). **Salvaguarda:** Adoção obrigatória dos limiares calibrados por subgrupo via pós-processamento e restrição do uso do escore exclusivamente à priorização de cobrança amigável.
+  * **Risco de Erro Cadastral ou Defasagem de Baixa Bancária:** Débitos recentemente quitados via compensação bancária ou sob efeito suspensivo por processo administrativo (impugnação ou pedido de isenção) podem ser escorados indevidamente caso haja latência na sincronização do banco de dados. **Salvaguarda:** Aplicação estrita do princípio *Human-in-the-Loop* (revisão humana obrigatória por auditor fiscal antes de qualquer ato coercitivo) e fluxo administrativo célere de contestação nos termos do Art. 20 da LGPD.
+
+### 4.2 Protocolo de Governança e Auditoria Contínua
+Para assegurar que o modelo mantenha conformidade técnica, ética e jurídica ao longo de todo o seu ciclo de vida em produção na Sefin Palmas, estabelece-se o seguinte plano periódico de monitoramento e auditoria:
+
+| Eixo de Auditoria | Periodicidade | Métrica / Critério de Controle | Ação Corretiva em Caso de Desvio |
+| :--- | :---: | :--- | :--- |
+| **Monitoramento de *Drift* de Dados e Desempenho** | Mensal (a cada ciclo de escoragem) | Queda superior a $5\text{ p.p.}$ no $F_1\text{-Score}$ ou *Recall* em relação à linha de base ($0{,}4209$), ou desvio significativo na distribuição das variáveis (*PSI* $> 0{,}20$). | Re-treinamento supervisionado do modelo com a janela temporal atualizada e revalidação métrica antes da nova rodada de escoragem. |
+| **Auditoria de Equidade (*Fairness*)** | Trimestral | Razão de Paridade Demográfica $\ge 0{,}80$ (Regra dos 4/5) e diferença máxima de $\text{TPR} \le 7\text{ p.p.}$ entre recortes de faixa de renda e setor urbano. | Recalibração dos limiares de corte pós-processamento por subgrupo via Fairlearn e revisão das variáveis territoriais. |
+| **Verificação de Elegibilidade Social e Privacidade (LGPD)** | Mensal (pré-inferência) | $100\%$ de exclusão dos registros com `boolean_is_iptu_social = True` e ausência integral de identificadores diretos (*PII*) na base de inferência. | Interrupção automática do *pipeline* (`src/ml/preparar_base.py`) via teste de asserção caso qualquer registro protegido vaze para a etapa de predição. |
+| **Auditoria de Rastreabilidade e Atendimento (Art. 20 LGPD)** | Contínua / Semestral | Integridade dos registros na tabela `LOG_AUDITORIA` (`id_analista`, `timestamp`, `justificativa_lgpd`) e cumprimento do prazo regulamentar nas revisões humanas solicitadas. | Revisão de permissões de acesso por perfil (`ANALISTA_FISCAL`) e aprimoramento dos relatórios individuais SHAP emitidos ao cidadão. |
+
+### 4.3 Parecer Final de Conformidade Algorítmica
+Com base nas evidências técnicas documentadas neste Relatório de Impacto Algorítmico — abrangendo a minimização e pseudonimização de dados pessoais desde a concepção (*Privacy by Design*), a exclusão preventiva de contribuintes amparados por políticas de proteção social, a mitigação pós-processamento de disparidades socioeconômicas e territoriais, a explicabilidade global e individual auditável via SHAP e a exigência de supervisão humana sobre qualquer medida restritiva —, atesta-se que o **Modelo de Recuperabilidade da Dívida Ativa** está **apto para operação assistida** em plena conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018) e com os princípios constitucionais da administração pública.
