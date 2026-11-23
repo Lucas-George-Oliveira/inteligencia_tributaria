@@ -39,10 +39,17 @@ from src.ml.scoring_recuperabilidade import (  # noqa: E402
     ATRIBUTOS_NUMERICOS,
     classificar_estrategia_sefin,
 )
+from src.ml.protecao_iptu_social import (  # noqa: E402
+    FUNDAMENTO_LEGAL,
+    carregar_ids_protegidos,
+    remover_protegidos_da_saida,
+)
 
 ARQ_CARTEIRA = RAIZ / "data" / "processado" / "carteira_teste_escorada.csv"
 ARQ_MODELO = RAIZ / "models" / "modelo_campeao_recuperabilidade.joblib"
 ARQ_METADADOS = RAIZ / "models" / "metadados_modelo_campeao.json"
+# Cadastro com o indicador de IPTU Social, usado só para a trava do RNF01
+ARQ_CADASTRO = RAIZ / "data" / "bruto" / "carteira_contribuintes_sintetica.csv"
 
 # Posição APROXIMADA do centro de cada região urbana de Palmas (WGS84).
 # Serve só para posicionar os círculos no mapa; não é a localização de imóveis.
@@ -71,12 +78,18 @@ AVISO_SINTETICO = (
 # ---------------------------------------------------------------------------
 # Carga de dados (funções puras, testadas em tests/test_painel.py)
 # ---------------------------------------------------------------------------
-def carregar_carteira(caminho: Path = ARQ_CARTEIRA) -> pd.DataFrame:
-    """Lê a carteira escorada e mantém só a foto mais recente de cada contribuinte."""
-    df = pd.read_csv(caminho, sep=";", encoding="utf-8-sig",
+def carregar_carteira(caminho: Path = ARQ_CARTEIRA, caminho_cadastro: Path = ARQ_CADASTRO) -> pd.DataFrame:
+    """
+    Lê a carteira escorada e mantém só a foto mais recente de cada contribuinte.
+
+    RNF01: retira qualquer beneficiário do IPTU Social que tenha chegado à
+    carteira, para que ele nunca apareça no ranking, no mapa ou na projeção.
+    """
+    df = pd.read_csv(caminho, sep=";", encoding="utf-8-sig", dtype={"id_contribuinte": str},
                      parse_dates=["data_referencia_simulada", "data_disponibilidade_alvo"])
     ultima = df["data_referencia_simulada"].max()
     atual = df[df["data_referencia_simulada"] == ultima].copy()
+    atual, _ = remover_protegidos_da_saida(atual, carregar_ids_protegidos(caminho_cadastro))
     return atual.drop_duplicates(subset="id_contribuinte").reset_index(drop=True)
 
 
@@ -166,7 +179,7 @@ def main():
     st.caption("Projeto Integrador BIINAR/UFT — Sprint 4 (MVP) · Modelo e scores gerados pelo pipeline em `src/ml/`")
     st.warning(AVISO_SINTETICO, icon="⚠️")
 
-    if not ARQ_CARTEIRA.exists() or not ARQ_MODELO.exists():
+    if not ARQ_CARTEIRA.exists() or not ARQ_MODELO.exists() or not ARQ_CADASTRO.exists():
         st.error("Artefatos do pipeline não encontrados. Execute primeiro o notebook "
                  "`notebooks/modelo_inadimplencia.ipynb` (seção 9) ou `python -m src.ml.scoring_recuperabilidade`.")
         st.stop()
@@ -231,7 +244,8 @@ def main():
         })
         st.download_button("Baixar ranking (CSV)", ranking.to_csv(sep=";", index_label="posicao").encode("utf-8-sig"),
                            file_name="ranking_recuperabilidade.csv", mime="text/csv")
-        st.caption("Os IDs são hashes: nenhum CPF/CNPJ é exibido (LGPD).")
+        st.caption("Os IDs são hashes: nenhum CPF/CNPJ é exibido (LGPD). "
+                   "Beneficiários do IPTU Social não aparecem no ranking (RNF01).")
 
     # ---- 2. Mapa de calor por setor --------------------------------------
     with aba_mapa:
@@ -339,8 +353,14 @@ def main():
                 "parcelamento_rompido": int(b.checkbox("Já rompeu parcelamento", bool(exemplo["parcelamento_rompido"]))),
                 "qtd_notificacoes": c.slider("Notificações recebidas", 0, 20, int(exemplo["qtd_notificacoes"])),
             }
+            beneficiario = st.checkbox(
+                "Beneficiário do IPTU Social (idoso, aposentado, pensionista ou PcD de baixa renda)",
+                help=f"Fundamento: {FUNDAMENTO_LEGAL}.")
             enviado = st.form_submit_button("Calcular score")
-        if enviado:
+        if enviado and beneficiario:
+            st.info("**Contribuinte protegido pelo IPTU Social (RNF01).** O modelo não é aplicado e "
+                    "nenhuma ação preditiva de cobrança é recomendada.")
+        elif enviado:
             X = pd.DataFrame([entrada])[ATRIBUTOS_NUMERICOS + ATRIBUTOS_CATEGORICOS]
             p_inad = float(modelo.predict_proba(X)[0, 1])
             score = int(round((1 - p_inad) * 1000))

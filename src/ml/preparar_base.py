@@ -1,37 +1,28 @@
-
 import pandas as pd
 
+from src.ml.protecao_iptu_social import (
+    excluir_grupos_protegidos,
+    remover_colunas_de_protecao,
+)
 
-def preparar_base(dados: pd.DataFrame) -> pd.DataFrame:
+
+def preparar_base(dados: pd.DataFrame, politica_indefinido: str = "proteger") -> pd.DataFrame:
     """
     Prepara a base para a modelagem preditiva.
 
-    Exclui beneficiarios do IPTU Social
-    e remove identificadores pessoais diretos.
+    Exclui os beneficiarios do IPTU Social (RNF01) pela regra formal de
+    src/ml/protecao_iptu_social.py e remove identificadores pessoais diretos.
+
+    politica_indefinido:
+        "proteger" (padrao) trata indicador nulo/invalido como protegido;
+        "erro" interrompe o preparo.
     """
 
     df = dados.copy()
 
-        # Compatibilidade com a base sintetica do professor
-    if "is_iptu_social" not in df.columns and "iptu_social" in df.columns:
-        df = df.rename(columns={
-            "iptu_social": "is_iptu_social"
-        })
-
-    # Verifica se a coluna obrigatoria existe
-    if "is_iptu_social" not in df.columns:
-        raise ValueError(
-            "Coluna is_iptu_social nao encontrada."
-        )
-
-    # Impede o uso de registros sem classificacao
-    if not df["is_iptu_social"].isin([True, False]).all():
-        raise ValueError(
-            "Existem indicadores de IPTU Social invalidos."
-        )
-
-    # RNF01: exclui beneficiarios da base preditiva
-    df = df[df["is_iptu_social"] == False].copy()
+    # RNF01: exclui os grupos protegidos da base preditiva.
+    # A funcao falha se nao houver coluna de IPTU Social na base.
+    df, _ = excluir_grupos_protegidos(df, politica=politica_indefinido)
 
     # Remove identificadores pessoais diretos
     colunas_sensiveis = [
@@ -44,7 +35,6 @@ def preparar_base(dados: pd.DataFrame) -> pd.DataFrame:
 
     df = df.drop(columns=colunas_sensiveis, errors="ignore")
 
-    # Remove o indicador que ja foi utilizado no filtro
-    df = df.drop(columns=["is_iptu_social"])
-
-    return df
+    # Remove os indicadores ja utilizados no filtro
+    # (o codigo do grupo pode revelar deficiencia: dado sensivel)
+    return remover_colunas_de_protecao(df)

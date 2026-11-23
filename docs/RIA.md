@@ -193,7 +193,7 @@ A implantação de modelos preditivos na gestão da dívida ativa da Secretaria 
 
 * **Impactos Sociais Positivos:**
   * **Justiça Fiscal e Capacidade de Investimento:** A priorização baseada em propensão de pagamento permite direcionar esforços administrativos aos devedores com maior capacidade contributiva e liquidez, incrementando a receita própria do Município para políticas públicas essenciais (saúde, educação e infraestrutura urbana) sem elevação de alíquotas tributárias.
-  * **Proteção Efetiva a Grupos Vulneráveis:** A trava determinística implementada na etapa de pré-processamento (`src/ml/preparar_base.py`), que exclui formalmente **1.393 beneficiários do IPTU Social** (idosos, aposentados, pensionistas e pessoas com deficiência de baixa renda), assegura que cidadãos em situação de hipossuficiência não sejam expostos a fluxos automatizados de cobrança ou restrições cadastrais.
+  * **Proteção Efetiva a Grupos Vulneráveis:** A trava determinística implementada em `src/ml/protecao_iptu_social.py` e aplicada no pré-processamento, no scoring e no painel (Seção 4.3), que exclui formalmente **1.393 beneficiários do IPTU Social** (idosos, aposentados, pensionistas e pessoas com deficiência de baixa renda), assegura que cidadãos em situação de hipossuficiência não sejam expostos a fluxos automatizados de cobrança ou restrições cadastrais.
   * **Desjudicialização e Redução de Custos Operacionais:** O acionamento preventivo por meio de réguas amigáveis (comunicados digitais, alertas de vencimento e propostas de parcelamento facilitado) antes do protesto extrajudicial ou do ajuizamento de execução fiscal evita o bloqueio patrimonial de contribuintes adimplentes eventuais e reduz a sobrecarga do Judiciário local.
 
 * **Riscos Sociais Identificados e Salvaguardas:**
@@ -207,8 +207,64 @@ Para assegurar que o modelo mantenha conformidade técnica, ética e jurídica a
 | :--- | :---: | :--- | :--- |
 | **Monitoramento de *Drift* de Dados e Desempenho** | Mensal (a cada ciclo de escoragem) | Queda superior a $5\text{ p.p.}$ no $F_1\text{-Score}$ ou *Recall* em relação à linha de base ($0{,}4209$), ou desvio significativo na distribuição das variáveis (*PSI* $> 0{,}20$). | Re-treinamento supervisionado do modelo com a janela temporal atualizada e revalidação métrica antes da nova rodada de escoragem. |
 | **Auditoria de Equidade (*Fairness*)** | Trimestral | Razão de Paridade Demográfica $\ge 0{,}80$ (Regra dos 4/5) e diferença máxima de $\text{TPR} \le 7\text{ p.p.}$ entre recortes de faixa de renda e setor urbano. | Recalibração dos limiares de corte pós-processamento por subgrupo via Fairlearn e revisão das variáveis territoriais. |
-| **Verificação de Elegibilidade Social e Privacidade (LGPD)** | Mensal (pré-inferência) | $100\%$ de exclusão dos registros com `boolean_is_iptu_social = True` e ausência integral de identificadores diretos (*PII*) na base de inferência. | Interrupção automática do *pipeline* (`src/ml/preparar_base.py`) via teste de asserção caso qualquer registro protegido vaze para a etapa de predição. |
+| **Verificação de Elegibilidade Social e Privacidade (LGPD)** | Mensal (pré-inferência) | $100\%$ de exclusão dos registros com `boolean_is_iptu_social = True` e ausência integral de identificadores diretos (*PII*) na base de inferência. | Interrupção automática do *pipeline* (`garantir_sem_protegidos()` em `src/ml/protecao_iptu_social.py`) caso qualquer registro protegido vaze para a saída, e execução de `tests/test_iptu_social.py` a cada alteração (Seção 4.3). |
 | **Auditoria de Rastreabilidade e Atendimento (Art. 20 LGPD)** | Contínua / Semestral | Integridade dos registros na tabela `LOG_AUDITORIA` (`id_analista`, `timestamp`, `justificativa_lgpd`) e cumprimento do prazo regulamentar nas revisões humanas solicitadas. | Revisão de permissões de acesso por perfil (`ANALISTA_FISCAL`) e aprimoramento dos relatórios individuais SHAP emitidos ao cidadão. |
 
-### 4.3 Parecer Final de Conformidade Algorítmica
+### 4.3 Proteção do IPTU Social no Código (RNF01)
+
+**Requisito.** O RNF01 (`docs/requisitos.md`) exige $100\%$ de exclusão dos beneficiários do IPTU Social das listas de cobrança preditiva, comprovada por teste automatizado com $0$ registros protegidos na saída do modelo.
+
+**Fundamento legal dos grupos.** O Código Tributário de Palmas (Lei Complementar nº 285/2013, art. 20, II) isenta do IPTU o imóvel cujo contribuinte seja:
+
+| Código no sistema | Grupo protegido | Critério legal |
+| :--- | :--- | :--- |
+| `idoso` | Idoso | Idade superior a 65 anos |
+| `aposentado` | Aposentado | Aposentado |
+| `pensionista` | Pensionista | Pensionista |
+| `pcd` | Pessoa com deficiência | Deficiência física com incapacidade para o trabalho |
+
+Pelo § 1º do mesmo artigo, a isenção depende ainda de quatro condições **cumulativas**: único imóvel edificado no Município, renda mensal de até 2 salários mínimos, uso exclusivamente residencial e imposto (sem descontos) inferior a 150 UFIP. Por isso os grupos são descritos como "de baixa renda".
+
+**Regra implementada** (`src/ml/protecao_iptu_social.py`):
+
+* **Quem decide a elegibilidade é a Sefin.** O sistema não recalcula idade, renda ou deficiência (a base não tem esses dados e eles não devem entrar no modelo). Ele usa o resultado oficial do cadastro: o indicador booleano (`is_iptu_social`, `iptu_social` ou `boolean_is_iptu_social`, conforme o DER) e, quando existir, o código do grupo (`grupo_iptu_social`). A função `eh_grupo_protegido()` marca o contribuinte como protegido se **qualquer** uma das fontes indicar proteção.
+* **Na dúvida, protege (*fail-safe*).** Indicador nulo, vazio ou inválido (ex.: `2`, `"talvez"`) e código de grupo desconhecido fazem o registro sair da cobrança preditiva e ficar pendente de correção cadastral. O pior erro possível é cobrar um beneficiário; retirar da fila alguém sem classificação apenas adia a cobrança até a revisão humana. A política `"erro"` interrompe o pipeline em vez de proteger. Base sem nenhuma coluna de IPTU Social é rejeitada.
+* **Exclusão em todas as saídas (defesa em profundidade):**
+
+| Etapa | Onde | O que acontece |
+| :--- | :--- | :--- |
+| Preparo da base | `preparar_base()` | Exclui os protegidos antes do histórico, do treino e do scoring |
+| Scoring | `gerar_scoring_recuperabilidade()` | Se ainda houver indicador na base, exclui antes de prever; com a lista de IDs protegidos, retira e confere a saída |
+| Carteira escorada | `python -m src.ml.scoring_recuperabilidade` | Lê os IDs protegidos do cadastro e chama `garantir_sem_protegidos()`, que interrompe o pipeline se algum beneficiário estiver na saída |
+| Ranking do painel | `carregar_carteira()` em `src/painel/painel_sefin.py` | Retira qualquer beneficiário antes de montar ranking, mapa e projeção; o simulador não calcula score para quem é marcado como beneficiário |
+
+* **Privacidade desde a concepção.** Depois do filtro, o indicador e o código do grupo são descartados (`remover_colunas_de_protecao()`), porque o código `pcd` revela dado de saúde (dado sensível, LGPD art. 11). Nenhuma saída do modelo carrega essas colunas.
+
+**Evidência do teste automatizado** (`tests/test_iptu_social.py`). O teste roda o pipeline completo sobre a carteira sintética (`preparar_base` → histórico de 12 meses → split temporal → scoring com o modelo campeão) **sem** passar a lista de protegidos ao scoring, e confere a saída de forma independente:
+
+| Verificação | Resultado |
+| :--- | :--- |
+| Beneficiários identificados na carteira sintética | $1.393$ de $20.000$ contribuintes |
+| Beneficiários na saída do pipeline (scores, faixas e ações recomendadas) | $\mathbf{0}$ |
+| Não beneficiários escorados | $18.607$ de $18.607$ (a regra não exclui ninguém além dos protegidos) |
+| Beneficiários na carteira versionada `data/processado/carteira_teste_escorada.csv` | $0$ |
+| Beneficiário injetado artificialmente na saída | Detectado: o pipeline levanta `ViolacaoProtecaoIPTUSocial` |
+| Casos de borda (indicador nulo, vazio, inválido; grupo informado com flag falsa; grupo desconhecido; coluna ausente) | Tratados conforme a regra acima |
+
+```text
+$ python -m pytest tests/test_iptu_social.py -v
+tests/test_iptu_social.py::test_carteira_sintetica_tem_1393_beneficiarios PASSED
+tests/test_iptu_social.py::test_pipeline_completo_nao_escora_nenhum_beneficiario PASSED
+tests/test_iptu_social.py::test_pipeline_nao_exclui_quem_nao_e_protegido PASSED
+tests/test_iptu_social.py::test_carteira_escorada_versionada_nao_tem_beneficiarios PASSED
+tests/test_iptu_social.py::test_trava_detecta_beneficiario_injetado_na_saida PASSED
+...
+70 passed, 1 skipped
+```
+
+O teste pulado (`test_painel_nao_exibe_beneficiario`) depende do Streamlit e roda no Codespace, onde o `requirements.txt` o instala.
+
+> **Limitação.** A carteira é sintética e traz apenas o indicador genérico `iptu_social`, sem o código do grupo. A regra por grupo (`grupo_iptu_social`) está pronta e testada com casos construídos, mas só será exercitada com a base real da Sefin.
+
+### 4.4 Parecer Final de Conformidade Algorítmica
 Com base nas evidências técnicas documentadas neste Relatório de Impacto Algorítmico — abrangendo a minimização e pseudonimização de dados pessoais desde a concepção (*Privacy by Design*), a exclusão preventiva de contribuintes amparados por políticas de proteção social, a mitigação pós-processamento de disparidades socioeconômicas e territoriais, a explicabilidade global e individual auditável via SHAP e a exigência de supervisão humana sobre qualquer medida restritiva —, atesta-se que o **Modelo de Recuperabilidade da Dívida Ativa** está **apto para operação assistida** em plena conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018) e com os princípios constitucionais da administração pública.
