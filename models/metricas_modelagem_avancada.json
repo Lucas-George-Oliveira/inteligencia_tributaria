@@ -39,5 +39,6 @@
       "ks": 0.1663
     }
   },
-  "modelo_campeao": "GradientBoosting_Temporal_Tunado"
+  "modelo_campeao": "Regressao_Logistica_Temporal",
+  "justificativa_selecao": "Desempenho equivalente em ROC AUC (0.6167 vs 0.6157), melhor F1 pós-calibração de limiar (0.4209 com corte 0.23) e auditabilidade linear direta para conformidade com o Art. 20 da LGPD."
 }

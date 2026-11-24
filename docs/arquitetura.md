@@ -1,32 +1,27 @@
-# Arquitetura e Estrutura do Repositório
+# Arquitetura do Sistema — Inteligência Tributária (Sefin Palmas)
 
-Este documento especifica a organização dos diretórios, a finalidade dos arquivos do commit inicial e as diretrizes de evolução arquitetural para o sistema de Inteligência Tributária (Sefin/Palmas-TO).
+**Projeto Integrador — BIINAR/UFT | Eixo II (2026/2)**
 
----
+## 1. Visão Geral em Camadas
 
-## 1. Visão Geral da Arquitetura
-
-O projeto adota uma estrutura modular baseada em boas práticas de Engenharia de Software, promovendo a separação de responsabilidades (SoC), reprodutibilidade, auditabilidade e conformidade integral com a LGPD. Para o início da Sprint 1, foi estabelecida uma arquitetura enxuta (*lean*) que garante a facilidade de integração contínua sem criar sobrecarga de arquivos vazios.
-
----
-
-## 2. Estrutura do Repositório (Commit Inicial)
+O sistema foi estruturado em cinco camadas desacopladas, cobrindo desde a ingestão de dados públicos e cadastrais até a priorização auditável da dívida ativa de Palmas-TO:
 
 ```text
-inteligencia-tributaria-palmas/
-├── .github/
-│   ├── CODEOWNERS                    # Configuração do PO como revisor obrigatório de PRs
-│   └── PULL_REQUEST_TEMPLATE.md      # Template com checklist de testes e conformidade LGPD
-├── data/
-│   └── .gitkeep                      # Estrutura reservada para dados (ignorada no versionamento)
-├── docs/
-│   ├── requisitos.md                 # Tabela de Requisitos Funcionais, Não Funcionais e MoSCoW
-│   └── arquitetura.md                # Este documento de especificação da arquitetura
-├── notebooks/
-│   └── .gitkeep                      # Espaço para análises exploratórias preliminares (.ipynb)
-├── src/
-│   ├── __init__.py                   # Inicializador do pacote Python
-│   └── app.py                        # Ponto de entrada da aplicação Streamlit
-├── .gitignore                        # Filtro de arquivos ignorados (dados sensíveis, .env e caches)
-├── README.md                         # Documentação principal, identificação do time e regras
-└── requirements.txt                  # Dependências Python com versões fixadas
+[Fontes de Dados]                  [Processamento & Banco]               [IA, Governança & Entrega]
+──────────────────                 ───────────────────────               ──────────────────────────
+API Transparência Palmas ──▶ Coleta & ETL Idempotente ──▶ PostgreSQL / SQLite
+(sgreceitas / NUCLEOGOV)     (src/etl_sefin.py)           (schema tributario)
+                                                                 │
+API IBGE (Censo 2022)    ──▶ Enriquecimento Territorial ─────────┤
+(src/api/coleta_ibge.py)     (engenharia_atributos.py)           ▼
+                                                         Preparo & Trava RNF01
+Carteira de Contribuintes ─▶ Pseudonimização LGPD ─────▶ (protecao_iptu_social.py)
+(Camada Individual)          (src/ml/preparar_base.py)           │
+                                                                 ▼
+                                                         Modelagem Temporal & Scoring
+                                                         (models/*.joblib)
+                                                                 │
+                                        ┌────────────────────────┼────────────────────────┐
+                                        ▼                        ▼                        ▼
+                                Auditoria Fairness         Explicabilidade          Painel MVP
+                                (Fairlearn / RIA)          (SHAP Art. 20)           (Streamlit)

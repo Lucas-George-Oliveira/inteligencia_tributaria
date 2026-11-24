@@ -188,22 +188,36 @@ O painel lê diretamente as saídas do pipeline (`models/` e `data/processado/`)
 
 ## 5. Sprint 5 — Governança e Ética
 
-### 5.1 Proteção do IPTU Social no código (RNF01 — E3)
+Portfólio completo organizado em [`docs/README.md`](docs/README.md), reunindo os três componentes do projeto (**MVP**, **Model Card** e **RIA**) e as travas ético-legais da LGPD[cite: 2].
 
-**Regra.** Beneficiários do IPTU Social nunca recebem ação preditiva de cobrança. Os grupos protegidos seguem o Código Tributário de Palmas (LC nº 285/2013, art. 20, II e § 1º): **idosos** (mais de 65 anos), **aposentados**, **pensionistas** e **pessoas com deficiência física incapacitadas para o trabalho**. Todos estão sujeitos às condições cumulativas da lei: único imóvel edificado, renda de até 2 salários mínimos, uso residencial e imposto abaixo de 150 UFIP.
+### 5.1 Entregáveis Consolidados
 
-A regra fica em [`src/ml/protecao_iptu_social.py`](src/ml/protecao_iptu_social.py) e vale em todas as saídas:
+| Entregável | Documento / Módulo | Resumo Técnico e Evidências |
+| :--- | :--- | :--- |
+| **E1 — Model Card** | [`docs/model_card.md`](docs/model_card.md)<br>[`src/ml/model_card_metricas.py`](src/ml/model_card_metricas.py) | Padrão Mitchell et al. (2019). Documenta a `Regressao_Logistica_Temporal` (limiar `0,23`, ROC AUC `0,617`, Recall `0,739`, F1 `0,421`), usos proibidos, limitações dos dados sintéticos e disparidades por subgrupo[cite: 1]. |
+| **E2 — Relatório de Impacto Algorítmico (RIA)** | [`docs/RIA.md`](docs/RIA.md)<br>[`src/ml/ria_fairness_mitigacao.py`](src/ml/ria_fairness_mitigacao.py)<br>[`src/ml/ria_explicabilidade_shap.py`](src/ml/ria_explicabilidade_shap.py) | Mapeamento LGPD (Art. 7º, 11 e 37), auditoria e mitigação via *Fairlearn* (elevando a razão de paridade demográfica para `0,94` em renda, `0,87` em setor e `0,98` em tipo de imóvel), explicabilidade SHAP global/local (Art. 20 LGPD) e plano de auditoria contínua[cite: 1]. |
+| **E3 — Proteção do IPTU Social (`RNF01`)** | [`src/ml/protecao_iptu_social.py`](src/ml/protecao_iptu_social.py)<br>[`tests/test_iptu_social.py`](tests/test_iptu_social.py) | Exclusão determinística *fail-safe* dos grupos protegidos pela LC nº 285/2013, art. 20, II (**idosos**, **aposentados**, **pensionistas** e **PcD** de baixa renda) no preparo, no *scoring* e no painel[cite: 1]. |
+| **E4 — Portfólio Revisado** | [`docs/README.md`](docs/README.md)<br>[`docs/MVP.md`](docs/MVP.md) | Consolidação do MVP, Model Card e RIA em `/docs`, validação completa da suíte de testes (`pytest`) e reprodutibilidade via `requirements.txt`[cite: 2]. |
 
-- **Preparo:** `preparar_base()` exclui os protegidos antes do histórico, do treino e do scoring.
-- **Scoring:** `gerar_scoring_recuperabilidade()` exclui os protegidos e confere a carteira escorada.
-- **Painel:** `carregar_carteira()` retira qualquer beneficiário antes do ranking, do mapa e da projeção, e o simulador não calcula score para beneficiários.
+### 5.2 Evidência da Proteção do IPTU Social (`RNF01`)
 
-`eh_grupo_protegido()` usa o indicador oficial do cadastro (`is_iptu_social`, `iptu_social` ou `boolean_is_iptu_social`) e, quando existir, o código do grupo (`grupo_iptu_social`: `idoso`, `aposentado`, `pensionista`, `pcd`). **Na dúvida, protege:** indicador nulo ou inválido tira o registro da cobrança até a correção do cadastro.
+`eh_grupo_protegido()` consome o indicador oficial do cadastro (`is_iptu_social`, `iptu_social` ou `boolean_is_iptu_social`) e o código do grupo (`grupo_iptu_social`: `idoso`, `aposentado`, `pensionista`, `pcd`). **Na dúvida, protege:** valores nulos ou inválidos retiram o registro da cobrança preditiva até revisão cadastral[cite: 1].
 
-**Evidência.** O teste roda o pipeline completo sobre a carteira sintética e confirma que, dos **1.393 beneficiários**, **0** aparecem na saída. Os 18.607 não beneficiários continuam sendo escorados.
+* **Resultado na carteira sintética:** dos **1.393 beneficiários** presentes nos 20.000 registros, **0** aparecem nas saídas do modelo ou do painel; os **18.607** elegíveis permanecem escorados[cite: 1].
+
+### 5.3 Divisão de Trabalho na Sprint 5
+
+| Integrante | Entregável | O que fez |
+| :--- | :--- | :--- |
+| Pedro Santos Magalhães Neto | E1 — Model Card | Redação completa do `docs/model_card.md` (Mitchell et al., 2019) e script de métricas/gráficos por subgrupo (`src/ml/model_card_metricas.py`)[cite: 1] |
+| Jacinto Pereira Brito, Geovana Souza Mendonça e Rafael Vieira Lima | E2 — Relatório de Impacto Algorítmico (RIA) | Mapeamento LGPD, auditoria e mitigação de *fairness* (`Fairlearn`), explicabilidade global/local (`SHAP`) e redação do `docs/RIA.md`[cite: 1] |
+| Lucas George Oliveira Nascimento | E3 e E4 — Proteção IPTU Social e Portfólio Revisado | Implementação da trava *fail-safe* (`src/ml/protecao_iptu_social.py`) com 70 testes (`tests/test_iptu_social.py`), organização final de `/docs` (`MVP.md`, `README.md`), revisão e merge dos PRs[cite: 1] |
+
+### 5.4 Como Reproduzir as Evidências da Sprint 5
 
 ```bash
-python -m pytest tests/test_iptu_social.py -v
-```
-
-Saída esperada: `70 passed, 1 skipped` (o teste do painel roda quando o Streamlit está instalado, como no Codespace). Detalhes e tabela de evidências na seção 4.3 do [`docs/RIA.md`](docs/RIA.md).
+pip install -r requirements.txt
+python -m src.ml.model_card_metricas
+python -m src.ml.ria_fairness_mitigacao
+python -m src.ml.ria_explicabilidade_shap
+python -m pytest -v

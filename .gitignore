@@ -10,3 +10,9 @@ data/bruto/ibge/
 data/tratado/
 models/*.joblib
 !models/*.joblib
+
+# === Artefatos sintéticos e figuras versionadas do portfólio (Sprint 5 - E4) ===
+!docs/figuras/
+!docs/figuras/*.png
+!data/bruto/carteira_contribuintes_sintetica.csv
+!data/processado/carteira_teste_escorada.csv
