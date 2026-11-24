@@ -183,3 +183,27 @@ O painel lê diretamente as saídas do pipeline (`models/` e `data/processado/`)
 | Jacinto Pereira Brito | E2 — Modelagem avançada, tunagem e scoring de recuperabilidade |
 | Lucas George Oliveira Nascimento | E3 — Consolidação da trilha no notebook e serialização |
 | Pedro Santos Magalhães Neto | E4 — MVP e painel interativo no Streamlit |
+
+---
+
+## 5. Sprint 5 — Governança e Ética
+
+### 5.1 Proteção do IPTU Social no código (RNF01 — E3)
+
+**Regra.** Beneficiários do IPTU Social nunca recebem ação preditiva de cobrança. Os grupos protegidos seguem o Código Tributário de Palmas (LC nº 285/2013, art. 20, II e § 1º): **idosos** (mais de 65 anos), **aposentados**, **pensionistas** e **pessoas com deficiência física incapacitadas para o trabalho**. Todos estão sujeitos às condições cumulativas da lei: único imóvel edificado, renda de até 2 salários mínimos, uso residencial e imposto abaixo de 150 UFIP.
+
+A regra fica em [`src/ml/protecao_iptu_social.py`](src/ml/protecao_iptu_social.py) e vale em todas as saídas:
+
+- **Preparo:** `preparar_base()` exclui os protegidos antes do histórico, do treino e do scoring.
+- **Scoring:** `gerar_scoring_recuperabilidade()` exclui os protegidos e confere a carteira escorada.
+- **Painel:** `carregar_carteira()` retira qualquer beneficiário antes do ranking, do mapa e da projeção, e o simulador não calcula score para beneficiários.
+
+`eh_grupo_protegido()` usa o indicador oficial do cadastro (`is_iptu_social`, `iptu_social` ou `boolean_is_iptu_social`) e, quando existir, o código do grupo (`grupo_iptu_social`: `idoso`, `aposentado`, `pensionista`, `pcd`). **Na dúvida, protege:** indicador nulo ou inválido tira o registro da cobrança até a correção do cadastro.
+
+**Evidência.** O teste roda o pipeline completo sobre a carteira sintética e confirma que, dos **1.393 beneficiários**, **0** aparecem na saída. Os 18.607 não beneficiários continuam sendo escorados.
+
+```bash
+python -m pytest tests/test_iptu_social.py -v
+```
+
+Saída esperada: `70 passed, 1 skipped` (o teste do painel roda quando o Streamlit está instalado, como no Codespace). Detalhes e tabela de evidências na seção 4.3 do [`docs/RIA.md`](docs/RIA.md).

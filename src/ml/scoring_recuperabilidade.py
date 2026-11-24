@@ -4,6 +4,16 @@ import numpy as np
 import pandas as pd
 
 from src.ml.divisao_temporal import dividir_temporal
+from src.ml.protecao_iptu_social import (
+    COLUNA_ID,
+    COLUNAS_INDICADOR,
+    COLUNA_GRUPO,
+    carregar_ids_protegidos,
+    excluir_grupos_protegidos,
+    garantir_sem_protegidos,
+    remover_colunas_de_protecao,
+    remover_protegidos_da_saida,
+)
 
 
 ATRIBUTOS_NUMERICOS = [
@@ -55,9 +65,24 @@ def classificar_estrategia_sefin(score: int, valor_divida: float) -> tuple[str, 
 
 def gerar_scoring_recuperabilidade(
     df: pd.DataFrame,
-    caminho_modelo: str = "models/modelo_campeao_recuperabilidade.joblib"
+    caminho_modelo: str = "models/modelo_campeao_recuperabilidade.joblib",
+    ids_protegidos=None,
 ) -> pd.DataFrame:
-    """Aplica o modelo campeão e calcula o Score de Recuperabilidade (0 a 1000)."""
+    """
+    Aplica o modelo campeão e calcula o Score de Recuperabilidade (0 a 1000).
+
+    RNF01: beneficiários do IPTU Social nunca recebem score nem ação.
+      - se a base ainda tiver o indicador de IPTU Social, os protegidos são
+        excluídos antes da predição;
+      - se ``ids_protegidos`` for informado, qualquer ID dessa lista é retirado
+        e a saída é conferida antes de ser devolvida.
+    """
+    if any(c in df.columns for c in (*COLUNAS_INDICADOR, COLUNA_GRUPO)):
+        df, _ = excluir_grupos_protegidos(df)
+        df = remover_colunas_de_protecao(df)
+    if ids_protegidos is not None and COLUNA_ID in df.columns:
+        df, _ = remover_protegidos_da_saida(df, ids_protegidos)
+
     modelo = joblib.load(caminho_modelo)
     X = df[ATRIBUTOS_NUMERICOS + ATRIBUTOS_CATEGORICOS]
 
@@ -84,7 +109,12 @@ def gerar_scoring_recuperabilidade(
         resultado["prob_recuperabilidade"] * resultado["valor_divida_consolidada"], 2
     )
 
-    return resultado.sort_values(by="retorno_esperado_estimado", ascending=False)
+    resultado = resultado.sort_values(by="retorno_esperado_estimado", ascending=False)
+
+    if ids_protegidos is not None and COLUNA_ID in resultado.columns:
+        garantir_sem_protegidos(resultado, ids_protegidos)
+
+    return resultado
 
 
 if __name__ == "__main__":
@@ -94,7 +124,9 @@ if __name__ == "__main__":
     )
     _, _, teste = dividir_temporal(df, coluna_data="data_referencia_simulada")
 
-    carteira_escorada = gerar_scoring_recuperabilidade(teste)
+    # RNF01: IDs protegidos lidos do cadastro bruto (que ainda tem o indicador)
+    protegidos = carregar_ids_protegidos()
+    carteira_escorada = gerar_scoring_recuperabilidade(teste, ids_protegidos=protegidos)
 
     Path("data/processado").mkdir(parents=True, exist_ok=True)
     carteira_escorada.to_csv(
