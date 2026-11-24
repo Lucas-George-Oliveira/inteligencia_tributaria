@@ -86,13 +86,8 @@ inferior.
 * **Indicadores de Disparidade:** Este foi o recorte de maior assimetria no modelo original, com Razão de Paridade Demográfica de $0{,}6905$ (abaixo do limiar de $0{,}80$) e diferença de $20{,}16\text{ p.p.}$ no $\text{TPR}$ entre imóveis comerciais ($72{,}20\%$) e terrenos ($92{,}36\%$). Após a mitigação pós-processamento, a Razão de Paridade Demográfica atingiu $0{,}9787$ e a diferença de $\text{TPR}$ caiu para apenas $1{,}10\text{ p.p.}$ ($F_1\text{-Score}$ global de $0{,}4111$).
 
 ![Mitigação de Viés por Tipo de Imóvel](figuras/ria_mitigacao_tipo_imovel.png)
-# Indicadores de Disparidade: Este foi o recorte de maior assimetria no modelo original, com Razão de Paridade Demográfica de $0
-{,}6905$ (abaixo do limiar de $0{,}80$) e diferença de $20{,}16$ p.p. no $TPR$ entre imóveis comerciais ($72{,}20\%$) e terrenos 
-($92{,}36\%$). Após a mitigação pós-processamento, a Razão de Paridade Demográfica atingiu $0{,}9787$ e a diferença de $TPR$ caiu 
-para apenas $1{,}10$ p.p. ($F_1\text{-Score}$ global de $0{,}4111$)
-.(Inserir aqui a figura: docs/figuras/ria_mitigacao_tipo_imovel.png)
 
-###  2.3 Discussão Honesta dos Vieses e Estratégia de Mitigação
+### 2.3 Discussão Honesta dos Vieses e Estratégia de Mitigação
 1. **Diagnóstico das Causas:**
 Observa-se que o modelo original tende a sinalizar proporcionalmente mais contribuintes de baixa renda ($68{,}88\%$ vs. $55{,}75\%$ na alta renda) e de regiões periféricas/em expansão (Taquari com $71{,}54\%$ e Taquaralto com $68{,}53\%$ vs. Plano Diretor 
 Norte com $52{,}74\%$), embora a diferença na inadimplência real entre esses grupos seja de apenas $2{,}6$ a $3{,}5$ pontos 
